@@ -13,21 +13,41 @@ class FBClient(object):
   auth_uri = 'https://www.facebook.com/dialog/oauth'
   access_token_uri = 'https://graph.facebook.com/oauth/access_token'
   graph_api_uri = 'https://graph.facebook.com'
+  # Pre-set client_id and client_secret so we can
+  # instantiate FBClient without them and have them loaded later
+  client_id = None
+  client_secret = None
+  # Pre-set the other attributes as well
+  redirect_uri = ''
+  scope = ''
+  access_token = ''
 
-  # Set scope's default value to an empty string instead of None
-  # as having 'None' as its value still gets into the request url
-  # (still as None) and ends up causing a facebook error (as 'None'
-  # is not a valid scope value.
-  def __init__(self, client_id, client_secret, scope='', redirect_uri=None, access_token=None):
-    self.client_id = client_id
-    self.client_secret = client_secret
-    self.redirect_uri = redirect_uri
-    self.scope = scope
-    self.access_token = access_token
+  # We won't be needing the __init__ method as we have
+  # set the default attributes in class already. Object
+  # constructor still works by passing in an expanded dict.
+
+  def _check_required_attributes(self, *args):
+    """Check required attributes in a function call
+
+    * args: string list of attributes
+    """
+    required_attrs = list(args)
+    # Always check for client_id and client_secret
+    required_attrs.append('client_id')
+    required_attrs.append('client_secret')
+    for attr in required_attrs:
+      if not getattr(self, attr):
+        raise Exception("%s attribute is required." % (attr))
 
   def get_auth_url(self, scope='', redirect_uri=None, state=None):
+    """Step 1: Redirect user to page for your application authorization
+    """
+    # Check required attributes (client_id, and client_secret)
+    self._check_required_attributes()
+
     if redirect_uri:
       self.redirect_uri = redirect_uri
+
     params = {
         'client_id': self.client_id,
         'redirect_uri': self.redirect_uri,
@@ -38,6 +58,14 @@ class FBClient(object):
     return self.auth_uri + '?' + urllib.urlencode(params)
 
   def get_access_token(self, code):
+    """Step 2: Get the access token
+
+    * code (string): This will be passed in to the controller/view where the
+        redirect_uri resolves to.
+    """
+    # Check required attributes (client_id, and client_secret)
+    self._check_required_attributes()
+
     params = {
         'client_id': self.client_id,
         'redirect_uri': self.redirect_uri,
@@ -67,6 +95,7 @@ class FBClient(object):
       raise Exception("An unknown error has occurred: %s" % response.content)
 
   def request(self, uri, method='get', **req_kwargs):
+
     if self.access_token:
       method = method.lower()
 
@@ -87,6 +116,9 @@ class FBClient(object):
       raise Exception('Not yet authorized.')
 
   def graph_request(self, path, *args, **kwargs):
+    """Step 3: We can now make the facebook api requests. :)
+    """
+
     path = path.lstrip('/')
     uri = '%s/%s' % (self.graph_api_uri, path)
     return self.request(uri, *args, **kwargs)
