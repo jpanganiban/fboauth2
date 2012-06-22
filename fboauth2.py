@@ -8,6 +8,14 @@ except ImportError:
   import simplejson as json
 
 
+class FBClientException(Exception):
+  """Base Exception for FBClient.
+
+  You can use this to catch FBClient exceptions.
+  """
+  pass
+
+
 class FBClient(object):
 
   auth_uri = 'https://www.facebook.com/dialog/oauth'
