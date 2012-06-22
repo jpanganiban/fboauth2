@@ -39,18 +39,15 @@ class FBClient(object):
       if not getattr(self, attr):
         raise Exception("%s attribute is required." % (attr))
 
-  def get_auth_url(self, scope='', redirect_uri=None, state=None):
+  def get_auth_url(self, scope='', redirect_uri='', state=''):
     """Step 1: Redirect user to page for your application authorization
     """
     # Check required attributes (client_id, and client_secret)
     self._check_required_attributes()
 
-    if redirect_uri:
-      self.redirect_uri = redirect_uri
-
     params = {
         'client_id': self.client_id,
-        'redirect_uri': self.redirect_uri,
+        'redirect_uri': redirect_uri or self.redirect_uri,
         'scope': scope or self.scope,
       }
     if state:
