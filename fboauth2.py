@@ -99,7 +99,7 @@ class FBClient(object):
         pass
       raise FBClientException("An unknown error has occurred: %s" % response.content)
 
-  def request(self, uri, method='get', **req_kwargs):
+  def _request(self, uri, method='get', **req_kwargs):
 
     if self.access_token:
       method = method.lower()
@@ -126,4 +126,4 @@ class FBClient(object):
 
     path = path.lstrip('/')
     uri = '%s/%s' % (self.graph_api_uri, path)
-    return self.request(uri, *args, **kwargs)
+    return self._request(uri, *args, **kwargs)
