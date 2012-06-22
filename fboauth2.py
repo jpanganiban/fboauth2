@@ -14,14 +14,18 @@ class FBClient(object):
   access_token_uri = 'https://graph.facebook.com/oauth/access_token'
   graph_api_uri = 'https://graph.facebook.com'
 
-  def __init__(self, client_id, client_secret, scope=None, redirect_uri=None, access_token=None):
+  # Set scope's default value to an empty string instead of None
+  # as having 'None' as its value still gets into the request url
+  # (still as None) and ends up causing a facebook error (as 'None'
+  # is not a valid scope value.
+  def __init__(self, client_id, client_secret, scope='', redirect_uri=None, access_token=None):
     self.client_id = client_id
     self.client_secret = client_secret
     self.redirect_uri = redirect_uri
     self.scope = scope
     self.access_token = access_token
 
-  def get_auth_url(self, scope=None, redirect_uri=None, state=None):
+  def get_auth_url(self, scope='', redirect_uri=None, state=None):
     if redirect_uri:
       self.redirect_uri = redirect_uri
     params = {
