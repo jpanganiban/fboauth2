@@ -45,7 +45,7 @@ class FBClient(object):
     required_attrs.append('client_secret')
     for attr in required_attrs:
       if not getattr(self, attr):
-        raise Exception("%s attribute is required." % (attr))
+        raise FBClientException("%s attribute is required." % (attr))
 
   def get_auth_url(self, scope='', redirect_uri='', state=''):
     """Step 1: Redirect user to page for your application authorization
@@ -92,12 +92,12 @@ class FBClient(object):
           error_type = error.get('type')
           error_message = error.get('message')
           if error_type and error_message:
-            raise Exception('%s: %s' % (error_type, error_message))
+            raise FBClientException('%s: %s' % (error_type, error_message))
       except ValueError: # Invalid JSON
         pass
       except AttributeError: # Not a dict
         pass
-      raise Exception("An unknown error has occurred: %s" % response.content)
+      raise FBClientException("An unknown error has occurred: %s" % response.content)
 
   def request(self, uri, method='get', **req_kwargs):
 
@@ -118,7 +118,7 @@ class FBClient(object):
       return json.loads(response.content)
 
     else:
-      raise Exception('Not yet authorized.')
+      raise FBClientException('Not yet authorized.')
 
   def graph_request(self, path, *args, **kwargs):
     """Step 3: We can now make the facebook api requests. :)
