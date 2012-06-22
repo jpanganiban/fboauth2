@@ -54,7 +54,7 @@ class FBClient(object):
       params['state'] = state
     return self.auth_uri + '?' + urllib.urlencode(params)
 
-  def get_access_token(self, code):
+  def get_access_token(self, code, redirect_uri=''):
     """Step 2: Get the access token
 
     * code (string): This will be passed in to the controller/view where the
@@ -65,7 +65,7 @@ class FBClient(object):
 
     params = {
         'client_id': self.client_id,
-        'redirect_uri': self.redirect_uri,
+        'redirect_uri': redirect_uri or self.redirect_uri,
         'client_secret': self.client_secret,
         'code': code,
       }
