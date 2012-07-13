@@ -17,18 +17,18 @@ class FBClientException(Exception):
 
 
 class FBClient(object):
+  """Base client object.
 
+  This is where you will be doing most of the work.
+  """
   auth_uri = 'https://www.facebook.com/dialog/oauth'
   access_token_uri = 'https://graph.facebook.com/oauth/access_token'
   graph_api_uri = 'https://graph.facebook.com'
   # Pre-set client_id and client_secret so we can
   # instantiate FBClient without them and have them loaded later
-  client_id = None
-  client_secret = None
+  client_id = client_secret = None
   # Pre-set the other attributes as well
-  redirect_uri = ''
-  scope = ''
-  access_token = ''
+  redirect_uri = scope = access_token = ''
 
   # We won't be needing the __init__ method as we have
   # set the default attributes in class already. Object
